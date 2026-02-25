@@ -11,7 +11,6 @@ from src.db import (
     get_engine,
     get_session_factory,
     Server,
-    Alliance,
     Player,
     VsDay,
     VsScoreEntry,
