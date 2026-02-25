@@ -71,8 +71,8 @@ with tabs[0]:
         with Session() as session:
             q = (
                 session.query(VsScoreEntry, VsDay, Player)
-                .join(VsDay)
-                .join(Player)
+                .join(VsDay, VsScoreEntry.day_id == VsDay.day_id)
+                .join(Player, VsScoreEntry.player_id == Player.player_id)
                 .filter(VsDay.server_id == server_id)
                 .filter(VsDay.date >= start_date)
                 .filter(VsDay.date <= end_date)
