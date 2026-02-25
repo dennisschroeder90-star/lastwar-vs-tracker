@@ -4,13 +4,14 @@ from typing import Dict, Any
 
 import pandas as pd
 import streamlit as st
-
+import plotly.express as px
 
 from src.db import (
     init_db,
     get_engine,
     get_session_factory,
     Server,
+    Alliance,
     Player,
     VsDay,
     VsScoreEntry,
@@ -71,8 +72,8 @@ with tabs[0]:
         with Session() as session:
             q = (
                 session.query(VsScoreEntry, VsDay, Player)
-                .join(VsDay, VsScoreEntry.day_id == VsDay.day_id)
-                .join(Player, VsScoreEntry.player_id == Player.player_id)
+                .join(VsDay)
+                .join(Player)
                 .filter(VsDay.server_id == server_id)
                 .filter(VsDay.date >= start_date)
                 .filter(VsDay.date <= end_date)
@@ -98,8 +99,8 @@ with tabs[0]:
             st.metric("Total Points", f"{total:,}")
 
             daily = df.groupby("date")["points"].sum().reset_index()
-            daily = daily.sort_values("date")
-            st.line_chart(daily, x="date", y="points")
+            fig = px.line(daily, x="date", y="points")
+            st.plotly_chart(fig, use_container_width=True)
 
             top = (
                 df.groupby("player")["points"]
@@ -174,5 +175,4 @@ with tabs[2]:
     if st.button("Save Reset"):
         with Session() as session:
             set_setting(session, "reset_time", new_reset)
-
         st.success("Saved.")
