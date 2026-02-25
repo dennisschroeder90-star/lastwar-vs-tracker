@@ -4,7 +4,7 @@ from typing import Dict, Any
 
 import pandas as pd
 import streamlit as st
-import plotly.express as px
+
 
 from src.db import (
     init_db,
@@ -99,8 +99,8 @@ with tabs[0]:
             st.metric("Total Points", f"{total:,}")
 
             daily = df.groupby("date")["points"].sum().reset_index()
-            fig = px.line(daily, x="date", y="points")
-            st.plotly_chart(fig, use_container_width=True)
+            daily = daily.sort_values("date")
+            st.line_chart(daily, x="date", y="points")
 
             top = (
                 df.groupby("player")["points"]
@@ -175,4 +175,5 @@ with tabs[2]:
     if st.button("Save Reset"):
         with Session() as session:
             set_setting(session, "reset_time", new_reset)
+
         st.success("Saved.")
